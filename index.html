@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rebond</title>
+<meta name="description" content="Rebond — un jeu de casse-blocs chromatique en français. Dirige la balle, change sa couleur et brise tous les blocs.">
+<style>
+  :root {
+    --fond: #0d1020;
+    --fond2: #161a33;
+    --panneau: #1c2142;
+    --texte: #eef0ff;
+    --doux: #9aa0c8;
+    --accent: #ffd166;
+    --bord: #2c3364;
+    --c0: #ff5d73; /* corail */
+    --c1: #2ec4b6; /* turquoise */
+    --c2: #ffb703; /* ambre */
+    --c3: #a77bff; /* violet */
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: radial-gradient(ellipse at top, var(--fond2), var(--fond) 70%) fixed, var(--fond);
+    color: var(--texte);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+  header {
+    width: 100%; max-width: 720px; padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .logo { font-weight: 900; letter-spacing: .18em; font-size: 22px; }
+  .logo span:nth-child(1){color:var(--c0)} .logo span:nth-child(2){color:var(--c1)}
+  .logo span:nth-child(3){color:var(--c2)} .logo span:nth-child(4){color:var(--c3)}
+  .logo span:nth-child(5){color:var(--c0)} .logo span:nth-child(6){color:var(--c1)}
+  .sous { color: var(--doux); font-size: 12px; letter-spacing: .05em; }
+  button {
+    font: inherit; color: var(--texte); background: var(--panneau);
+    border: 1px solid var(--bord); border-radius: 10px; padding: 10px 14px; cursor: pointer;
+  }
+  button:hover { border-color: var(--doux); }
+  button.principal { background: var(--accent); color: #1a1a1a; border-color: var(--accent); font-weight: 700; }
+  main { width: 100%; max-width: 720px; padding: 0 16px 16px; }
+  .hud {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px;
+  }
+  .hud div {
+    background: var(--panneau); border: 1px solid var(--bord); border-radius: 10px;
+    padding: 6px 8px; text-align: center;
+  }
+  .hud small { display: block; color: var(--doux); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+  .hud b { font-size: 18px; font-variant-numeric: tabular-nums; }
+  .scene { position: relative; width: 100%; aspect-ratio: 4 / 3; }
+  canvas {
+    width: 100%; height: 100%; display: block; border-radius: 12px;
+    border: 1px solid var(--bord); background: #0a0c18; touch-action: none;
+  }
+  .ecran {
+    position: absolute; inset: 0; display: none; flex-direction: column; align-items: center;
+    justify-content: center; gap: 12px; padding: 16px; text-align: center;
+    background: rgba(10, 12, 24, .88); border-radius: 12px; overflow-y: auto;
+  }
+  .ecran.visible { display: flex; }
+  .ecran h2 { margin: 0; font-size: clamp(22px, 5vw, 34px); }
+  .ecran p { margin: 0; color: var(--doux); max-width: 460px; line-height: 1.45; }
+  .boutons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .menu-liste { display: grid; gap: 8px; width: min(320px, 100%); }
+  .menu-liste button { text-align: left; display: flex; justify-content: space-between; align-items: center; }
+  .menu-liste button small { color: var(--doux); }
+  .menu-liste button.principal small { color: #4a3a00; }
+  .regles { text-align: left; color: var(--doux); max-width: 460px; line-height: 1.5; margin: 0; padding-left: 18px; }
+  .regles b { color: var(--texte); }
+  .ligne { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  input[type=number] {
+    font: inherit; width: 110px; padding: 9px 10px; border-radius: 10px;
+    border: 1px solid var(--bord); background: var(--fond); color: var(--texte);
+  }
+  .tactile { display: none; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .tactile button { padding: 18px 0; font-size: 22px; user-select: none; -webkit-user-select: none; }
+  @media (pointer: coarse) { .tactile { display: grid; } }
+  footer { color: var(--doux); font-size: 12px; padding: 4px 16px 20px; text-align: center; }
+  kbd { background: var(--panneau); border: 1px solid var(--bord); border-radius: 5px; padding: 1px 6px; font-size: 12px; }
+  @media (max-width: 480px) { .hud b { font-size: 15px; } .logo { font-size: 18px; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo"><span>R</span><span>E</span><span>B</span><span>O</span><span>N</span><span>D</span></div>
+    <div class="sous">casse-blocs chromatique</div>
+  </div>
+  <div class="boutons">
+    <button id="btnPause" title="Pause (Espace)">⏸</button>
+    <button id="btnMenu">Menu</button>
+  </div>
+</header>
+
+<main>
+  <div class="hud">
+    <div><small>Score</small><b id="hudScore">0</b></div>
+    <div><small id="hudNiveauLib">Niveau</small><b id="hudNiveau">1</b></div>
+    <div><small>Vies</small><b id="hudVies">3</b></div>
+    <div><small>Bonus</small><b id="hudTemps">0</b></div>
+  </div>
+
+  <div class="scene">
+    <canvas id="jeu" width="640" height="480" aria-label="Plateau de jeu"></canvas>
+
+    <div class="ecran visible" id="ecranMenu">
+      <h2>Prêt à rebondir ?</h2>
+      <div class="menu-liste">
+        <button class="principal" data-mode="jour">Partie du jour <small id="jourEtat">nouveau</small></button>
+        <button data-mode="campagne">Campagne <small id="campRecord">8 niveaux</small></button>
+        <button data-mode="illimite">Mode illimité <small>∞</small></button>
+        <button data-ouvre="ecranRegles">Comment jouer</button>
+        <button data-ouvre="ecranReglages">Réglages</button>
+      </div>
+    </div>
+
+    <div class="ecran" id="ecranIllimite">
+      <h2>Mode illimité</h2>
+      <p>Chaque numéro de partie donne toujours le même tableau. Partage le numéro pour défier tes amis.</p>
+      <div class="ligne">
+        <label for="numPartie">Partie n°</label>
+        <input type="number" id="numPartie" min="1" max="999999" value="1">
+        <button id="btnHasard">Au hasard</button>
+      </div>
+      <div class="boutons">
+        <button class="principal" id="btnLancerIllimite">Jouer</button>
+        <button data-ouvre="ecranMenu">Retour</button>
+      </div>
+    </div>
+
+    <div class="ecran" id="ecranRegles">
+      <h2>Comment jouer</h2>
+      <ul class="regles">
+        <li>La balle rebondit toute seule de haut en bas. Dirige-la avec <kbd>←</kbd> <kbd>→</kbd> (ou <kbd>Q</kbd> <kbd>D</kbd>).</li>
+        <li>Touche un <b>pot de peinture</b> (bloc à anneau) pour prendre sa couleur.</li>
+        <li>Touche un <b>bloc plein</b> de ta couleur pour le briser. Brise-les tous pour finir le niveau.</li>
+        <li>Les <b>blocs à flèches</b> se poussent sur le côté s'ils sont de ta couleur.</li>
+        <li>Évite les <b>têtes de mort</b> : elles coûtent une vie.</li>
+        <li>Plus tu es rapide, plus ton bonus de temps est gros. <kbd>Espace</kbd> met en pause.</li>
+      </ul>
+      <button data-ouvre="ecranMenu">Retour</button>
+    </div>
+
+    <div class="ecran" id="ecranReglages">
+      <h2>Réglages</h2>
+      <div class="menu-liste">
+        <button id="optSon">Son <small id="optSonVal">activé</small></button>
+        <button id="optVitesse">Vitesse <small id="optVitesseVal">normale</small></button>
+        <button id="optEffacer">Effacer mes records</button>
+      </div>
+      <button data-ouvre="ecranMenu">Retour</button>
+    </div>
+
+    <div class="ecran" id="ecranMessage">
+      <h2 id="msgTitre"></h2>
+      <p id="msgTexte"></p>
+      <div class="boutons" id="msgBoutons"></div>
+    </div>
+  </div>
+
+  <div class="tactile">
+    <button id="tGauche" aria-label="Gauche">◀</button>
+    <button id="tPause" aria-label="Pause">⏸</button>
+    <button id="tDroite" aria-label="Droite">▶</button>
+  </div>
+</main>
+<footer>Astuce : sur mobile, appuie à gauche ou à droite du plateau pour diriger la balle.</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- Constantes ----------
+  const COLS = 16, ROWS = 12, CS = 40, W = COLS * CS, H = ROWS * CS, R = 11;
+  const COULEURS = ["#ff5d73", "#2ec4b6", "#ffb703", "#a77bff"];
+  const NOMS_COULEURS = ["corail", "turquoise", "ambre", "violet"];
+  const TEMPS_NIVEAU = 150; // secondes
+  const DEPART = { x: 7, y: 10 };
+
+  // Légende : . vide · o départ · A-D bloc couleur · a-d peinture
+  //           1-4 bloc poussable · X tête de mort · # mur
+  const NIVEAUX = [
+    { nom: "Premiers rebonds", couleur: 0, carte: [
+      "................",
+      ".AAAA......BBBB.",
+      "................",
+      "................",
+      "....b......a....",
+      "................",
+      "................",
+      ".AAAA......BBBB.",
+      "................",
+      "................",
+      ".......o........",
+      "................"]},
+    { nom: "Le pont", couleur: 1, carte: [
+      "................",
+      ".A.A.A.A.A.A.A..",
+      "................",
+      "..X..........X..",
+      "................",
+      "...BBBBBBBBBB...",
+      "................",
+      ".b............a.",
+      "................",
+      ".....######.....",
+      ".......o........",
+      "................"]},
+    { nom: "Trois teintes", couleur: 0, carte: [
+      "CCCC........AAAA",
+      "................",
+      "....##....##....",
+      ".c............b.",
+      "....BBBBBBBB....",
+      "................",
+      "X..............X",
+      "................",
+      "..a..........c..",
+      "................",
+      ".AAA...o....CCC.",
+      "................"]},
+    { nom: "Pousse-pousse", couleur: 0, carte: [
+      "................",
+      ".DDDDDD..AAAAAA.",
+      "................",
+      ".d....1.......a.",
+      "######..########",
+      "................",
+      "...X........X...",
+      "................",
+      "....DD....AA....",
+      "................",
+      ".......o........",
+      "................"]},
+    { nom: "Arc-en-ciel", couleur: 0, carte: [
+      "X..............X",
+      ".A.B.C.D.A.B.C..",
+      "................",
+      "..X....X....X...",
+      "................",
+      ".a..b..c..d.....",
+      "................",
+      "..D.C.B.A.D.C...",
+      "................",
+      "X..............X",
+      ".......o........",
+      "................"]},
+    { nom: "La forteresse", couleur: 0, carte: [
+      "################",
+      "#AAB........BAA#",
+      "#..............#",
+      "#..#..XXXX..#..#",
+      "#..............#",
+      "#b...######...a#",
+      "#..............#",
+      "#..BBB....AAA..#",
+      "#..............#",
+      "#..............#",
+      "#......o.......#",
+      "################"]},
+    { nom: "Couloir ambré", couleur: 0, carte: [
+      "................",
+      ".CCCCCCCCCCCCCC.",
+      ".X............X.",
+      "................",
+      "..c...3..3...a..",
+      "................",
+      "....AAAAAAAA....",
+      "................",
+      "...X........X...",
+      "................",
+      "....CC.o..CC....",
+      "................"]},
+    { nom: "Le grand final", couleur: 1, carte: [
+      ".D.D.D.D.D.D.D.D",
+      "................",
+      ".X.X.X.X.X.X.X.X",
+      "................",
+      "................",
+      ".......d........",
+      "................",
+      "B..............B",
+      "................",
+      "....b...........",
+      ".BBBB..o...BBBB.",
+      "................"]},
+  ];
+
+  // ---------- Stockage (tolérant aux erreurs) ----------
+  const store = {
+    get(k, def) { try { const v = localStorage.getItem("rebond." + k); return v === null ? def : JSON.parse(v); } catch { return def; } },
+    set(k, v) { try { localStorage.setItem("rebond." + k, JSON.stringify(v)); } catch {} },
+    clear() { try { Object.keys(localStorage).filter(k => k.startsWith("rebond.")).forEach(k => localStorage.removeItem(k)); } catch {} },
+  };
+  const reglages = { son: store.get("son", true), vitesse: store.get("vitesse", 1) };
+
+  // ---------- Son ----------
+  let audio = null;
+  function bip(freq, duree = 0.07, type = "square", vol = 0.06) {
+    if (!reglages.son) return;
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+      o.type = type; o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
+      o.connect(g).connect(audio.destination); o.start(t); o.stop(t + duree);
+    } catch {}
+  }
+  const sons = {
+    rebond: () => bip(220, 0.04, "triangle", 0.04),
+    casse: () => { bip(660, 0.06); setTimeout(() => bip(990, 0.05), 40); },
+    peinture: () => { bip(440, 0.08, "sine", 0.08); setTimeout(() => bip(660, 0.1, "sine", 0.08), 60); },
+    pousse: () => bip(140, 0.08, "sawtooth", 0.05),
+    mort: () => { bip(300, 0.15, "sawtooth"); setTimeout(() => bip(150, 0.3, "sawtooth"), 120); },
+    gagne: () => [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => bip(f, 0.12, "square", 0.05), i * 90)),
+  };
+
+  // ---------- Générateur pseudo-aléatoire ----------
+  function mulberry32(a) {
+    return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  }
+
+  function genererNiveau(graine) {
+    const rnd = mulberry32(graine * 7919 + 13);
+    const ri = n => Math.floor(rnd() * n);
+    const nbCouleurs = 2 + ri(3);
+    const g = Array.from({ length: ROWS }, () => Array(COLS).fill("."));
+    const libre = (x, y) => g[y][x] === "." && !(Math.abs(x - DEPART.x) <= 1 && y >= 8);
+    // Rangées de blocs de couleur
+    const nbRangees = 6 + ri(5);
+    for (let i = 0; i < nbRangees; i++) {
+      const y = ri(9), len = 2 + ri(4), x0 = ri(COLS - len), k = ri(nbCouleurs);
+      for (let x = x0; x < x0 + len; x++) if (libre(x, y)) g[y][x] = "ABCD"[k];
+    }
+    // S'assurer que chaque couleur a au moins un bloc
+    for (let k = 0; k < nbCouleurs; k++) {
+      if (!g.some(r => r.includes("ABCD"[k]))) {
+        let x, y; do { x = ri(COLS); y = ri(9); } while (!libre(x, y)); g[y][x] = "ABCD"[k];
+      }
+    }
+    // Pots de peinture (un par couleur, parfois deux)
+    for (let k = 0; k < nbCouleurs; k++) {
+      const n = 1 + (rnd() < 0.3 ? 1 : 0);
+      for (let j = 0; j < n; j++) { let x, y, e = 0; do { x = ri(COLS); y = ri(10); e++; } while (!libre(x, y) && e < 200); g[y][x] = "abcd"[k]; }
+    }
+    // Obstacles
+    const nbMorts = 1 + ri(4 + Math.min(4, Math.floor(graine / 25)));
+    for (let i = 0; i < nbMorts; i++) { let x, y, e = 0; do { x = ri(COLS); y = ri(10); e++; } while (!libre(x, y) && e < 200); g[y][x] = "X"; }
+    const nbMurs = ri(3);
+    for (let i = 0; i < nbMurs; i++) {
+      const y = 1 + ri(8), len = 2 + ri(4), x0 = ri(COLS - len);
+      for (let x = x0; x < x0 + len; x++) if (libre(x, y)) g[y][x] = "#";
+    }
+    if (rnd() < 0.4) { let x, y, e = 0; do { x = ri(COLS); y = ri(9); e++; } while (!libre(x, y) && e < 200); g[y][x] = "1234"[ri(nbCouleurs)]; }
+    g[DEPART.y][DEPART.x] = "o";
+    return { nom: "Partie n°" + graine, couleur: ri(nbCouleurs), carte: g.map(r => r.join("")) };
+  }
+
+  function graineDuJour() {
+    const d = new Date();
+    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  }
+  function cleDuJour() { const d = new Date(); return `jour-${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
+
+  // ---------- État du jeu ----------
+  const cv = document.getElementById("jeu"), ctx = cv.getContext("2d");
+  const $ = id => document.getElementById(id);
+  let grille, balle, partie, etat = "menu", particules = [], trainee = [], secousse = 0;
+  const touches = { g: false, d: false };
+
+  function chargerNiveau(def) {
+    grille = [];
+    let depart = { ...DEPART };
+    for (let y = 0; y < ROWS; y++) {
+      const ligne = (def.carte[y] || "").padEnd(COLS, ".").slice(0, COLS);
+      grille.push([...ligne].map((c, x) => {
+        if (c === "o") { depart = { x, y }; return null; }
+        if ("ABCD".includes(c)) return { t: "bloc", k: "ABCD".indexOf(c) };
+        if ("abcd".includes(c)) return { t: "peinture", k: "abcd".indexOf(c) };
+        if ("1234".includes(c)) return { t: "pousse", k: "1234".indexOf(c) };
+        if (c === "X") return { t: "mort" };
+        if (c === "#") return { t: "mur" };
+        return null;
+      }));
+    }
+    partie.def = def; partie.depart = depart; partie.couleurDepart = def.couleur;
+    partie.temps = TEMPS_NIVEAU;
+    placerBalle();
+  }
+
+  function placerBalle() {
+    balle = { x: partie.depart.x * CS + CS / 2, y: partie.depart.y * CS + CS / 2, vx: 0, vy: -1, k: partie.couleurDepart };
+    trainee = [];
+  }
+
+  function blocsRestants() { let n = 0; for (const r of grille) for (const c of r) if (c && c.t === "bloc") n++; return n; }
+
+  function nouvellePartie(mode, num) {
+    partie = { mode, num, niveau: 0, score: 0, vies: 3 };
+    demarrerNiveau();
+  }
+
+  function demarrerNiveau() {
+    let def;
+    if (partie.mode === "campagne") def = NIVEAUX[partie.niveau];
+    else if (partie.mode === "illimite") def = genererNiveau(partie.num);
+    else def = { ...genererNiveau(graineDuJour()), nom: "Partie du jour" };
+    chargerNiveau(def);
+    majHud();
+    afficherMessage(def.nom,
+      `Ta balle est ${NOMS_COULEURS[def.couleur]}. ${blocsRestants()} blocs à briser.`,
+      [["Go !", () => { cacherEcrans(); etat = "jeu"; }, true]]);
+    etat = "attente";
+  }
+
+  // ---------- Physique ----------
+  function vitesseV() { return 250 * reglages.vitesse; }
+
+  function cellulesTouchees(x, y) {
+    const res = [];
+    const x0 = Math.floor((x - R) / CS), x1 = Math.floor((x + R - 0.001) / CS);
+    const y0 = Math.floor((y - R) / CS), y1 = Math.floor((y + R - 0.001) / CS);
+    for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) {
+      if (cx < 0 || cy < 0 || cx >= COLS || cy >= ROWS) continue;
+      const c = grille[cy][cx];
+      if (c && !c.casse) res.push({ cx, cy, c });
+    }
+    return res;
+  }
+
+  function pas(dt) {
+    const acc = 1500 * reglages.vitesse, max = 230 * reglages.vitesse, frein = 700 * reglages.vitesse;
+    const dir = (touches.d ? 1 : 0) - (touches.g ? 1 : 0);
+    if (dir) balle.vx += dir * acc * dt;
+    else balle.vx -= Math.sign(balle.vx) * Math.min(Math.abs(balle.vx), frein * dt);
+    balle.vx = Math.max(-max, Math.min(max, balle.vx));
+
+    const chocs = [];
+    // Axe horizontal
+    balle.x += balle.vx * dt;
+    if (balle.x < R) { balle.x = R; balle.vx = Math.abs(balle.vx) * 0.4; }
+    if (balle.x > W - R) { balle.x = W - R; balle.vx = -Math.abs(balle.vx) * 0.4; }
+    let hx = cellulesTouchees(balle.x, balle.y);
+    if (hx.length) {
+      const s = Math.sign(balle.vx) || 1;
+      if (s > 0) balle.x = Math.min(...hx.map(h => h.cx)) * CS - R - 0.01;
+      else balle.x = (Math.max(...hx.map(h => h.cx)) + 1) * CS + R + 0.01;
+      hx.forEach(h => chocs.push({ ...h, axe: "x", s }));
+      balle.vx = -s * Math.max(60, Math.abs(balle.vx) * 0.4);
+    }
+    // Axe vertical
+    balle.y += balle.vy * vitesseV() * dt;
+    let rebond = false;
+    if (balle.y < R) { balle.y = R; balle.vy = 1; rebond = true; }
+    if (balle.y > H - R) { balle.y = H - R; balle.vy = -1; rebond = true; }
+    let hy = cellulesTouchees(balle.x, balle.y);
+    if (hy.length) {
+      const s = balle.vy;
+      if (s > 0) balle.y = Math.min(...hy.map(h => h.cy)) * CS - R - 0.01;
+      else balle.y = (Math.max(...hy.map(h => h.cy)) + 1) * CS + R + 0.01;
+      hy.forEach(h => chocs.push({ ...h, axe: "y", s }));
+      balle.vy = -s; rebond = true;
+    }
+
+    if (chocs.some(h => h.c.t === "mort")) return mourir();
+    const vus = new Set();
+    let casse = false;
+    for (const h of chocs) {
+      const cle = h.cx + "," + h.cy; if (vus.has(cle)) continue; vus.add(cle);
+      const c = h.c;
+      if (c.t === "bloc" && c.k === balle.k) {
+        grille[h.cy][h.cx] = null; casse = true;
+        partie.score += 10 * (partie.niveau + 1);
+        eclats(h.cx * CS + CS / 2, h.cy * CS + CS / 2, COULEURS[c.k], 14);
+      } else if (c.t === "peinture" && c.k !== balle.k) {
+        balle.k = c.k; sons.peinture();
+        eclats(balle.x, balle.y, COULEURS[c.k], 10);
+      } else if (c.t === "pousse" && c.k === balle.k && h.axe === "x") {
+        const nx = h.cx + h.s;
+        if (nx >= 0 && nx < COLS && !grille[h.cy][nx]) {
+          grille[h.cy][nx] = c; grille[h.cy][h.cx] = null; sons.pousse();
+        }
+      }
+    }
+    if (casse) { sons.casse(); secousse = 4; majHud(); if (blocsRestants() === 0) return niveauFini(); }
+    else if (rebond) sons.rebond();
+  }
+
+  function mourir() {
+    etat = "mort"; sons.mort(); secousse = 10;
+    eclats(balle.x, balle.y, COULEURS[balle.k], 30);
+    partie.vies--; majHud();
+    setTimeout(() => {
+      if (partie.vies <= 0) return finDePartie();
+      placerBalle();
+      afficherMessage("Aïe !", `Il te reste ${partie.vies} vie${partie.vies > 1 ? "s" : ""}.`,
+        [["Continuer", () => { cacherEcrans(); etat = "jeu"; }, true]]);
+      etat = "attente";
+    }, 900);
+  }
+
+  function niveauFini() {
+    etat = "gagne"; sons.gagne();
+    const bonus = Math.ceil(partie.temps) * 5;
+    partie.score += bonus; majHud();
+    for (let i = 0; i < 6; i++) eclats(Math.random() * W, Math.random() * H * 0.7, COULEURS[i % 4], 12);
+    setTimeout(() => {
+      const boutons = [];
+      let titre = "Niveau terminé !", texte = `Bonus de temps : +${bonus}. Score : ${partie.score}.`;
+      if (partie.mode === "campagne") {
+        if (partie.niveau + 1 >= NIVEAUX.length) {
+          enregistrer("campagne", partie.score);
+          titre = "Campagne terminée !";
+          texte += ` Bravo, tu as fini les ${NIVEAUX.length} niveaux.`;
+          boutons.push(["Menu", ouvrirMenu, true]);
+        } else boutons.push(["Niveau suivant", () => { partie.niveau++; demarrerNiveau(); }, true]);
+      } else if (partie.mode === "illimite") {
+        enregistrer("illimite", partie.score);
+        boutons.push(["Partie suivante", () => { partie.num++; partie.niveau++; majUrl(partie.num); demarrerNiveau(); }, true]);
+        boutons.push(["Menu", ouvrirMenu]);
+      } else {
+        store.set(cleDuJour(), { score: partie.score, gagne: true });
+        titre = "Partie du jour réussie !"; texte += " Reviens demain pour un nouveau tableau.";
+        boutons.push(["Partager", partager, true], ["Menu", ouvrirMenu]);
+      }
+      afficherMessage(titre, texte, boutons);
+    }, 900);
+  }
+
+  function finDePartie() {
+    etat = "fin";
+    let texte = `Score final : ${partie.score}.`;
+    const boutons = [["Rejouer", () => nouvellePartie(partie.mode, partie.mode === "illimite" ? partie.num : undefined), true], ["Menu", ouvrirMenu]];
+    if (partie.mode === "jour") { store.set(cleDuJour(), { score: partie.score, gagne: false }); boutons.unshift(["Partager", partager]); }
+    else {
+      const rec = enregistrer(partie.mode, partie.score);
+      if (rec) texte += " Nouveau record !";
+    }
+    afficherMessage("Partie terminée", texte, boutons);
+  }
+
+  function enregistrer(mode, score) {
+    const ancien = store.get("record." + mode, 0);
+    if (score > ancien) { store.set("record." + mode, score); return true; }
+    return false;
+  }
+
+  function partager() {
+    const r = store.get(cleDuJour(), null);
+    const d = new Date().toLocaleDateString("fr-FR");
+    const txt = `Rebond — partie du ${d} : ${r && r.gagne ? "réussie ✅" : "ratée ❌"} avec ${r ? r.score : 0} points.`;
+    if (navigator.share) navigator.share({ text: txt }).catch(() => {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => alert("Résultat copié !"), () => alert(txt));
+    else alert(txt);
+  }
+
+  // ---------- Effets ----------
+  function eclats(x, y, couleur, n) {
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, v = 60 + Math.random() * 200;
+      particules.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, vie: 0.6 + Math.random() * 0.4, couleur, t: 2 + Math.random() * 4 });
+    }
+  }
+
+  // ---------- Dessin ----------
+  function rond(x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  function dessinerCellule(c, cx, cy, temps) {
+    const x = cx * CS + 3, y = cy * CS + 3, s = CS - 6;
+    if (c.t === "bloc") {
+      ctx.fillStyle = COULEURS[c.k]; rond(x, y, s, s, 7); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.25)"; rond(x + 4, y + 4, s - 8, 7, 3); ctx.fill();
+      ctx.fillStyle = "rgba(0,0,0,.18)"; rond(x + 4, y + s - 9, s - 8, 5, 2); ctx.fill();
+    } else if (c.t === "peinture") {
+      ctx.fillStyle = "#151933"; rond(x, y, s, s, 9); ctx.fill();
+      ctx.strokeStyle = COULEURS[c.k]; ctx.lineWidth = 3; rond(x + 1.5, y + 1.5, s - 3, s - 3, 8); ctx.stroke();
+      const p = 7 + Math.sin(temps * 4 + cx + cy) * 1.5;
+      ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, p, 0, Math.PI * 2); ctx.fillStyle = COULEURS[c.k]; ctx.fill();
+    } else if (c.t === "pousse") {
+      ctx.fillStyle = COULEURS[c.k]; rond(x, y, s, s, 4); ctx.fill();
+      ctx.fillStyle = "rgba(0,0,0,.35)";
+      ctx.beginPath(); ctx.moveTo(x + 6, y + s / 2); ctx.lineTo(x + 13, y + s / 2 - 6); ctx.lineTo(x + 13, y + s / 2 + 6); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(x + s - 6, y + s / 2); ctx.lineTo(x + s - 13, y + s / 2 - 6); ctx.lineTo(x + s - 13, y + s / 2 + 6); ctx.fill();
+    } else if (c.t === "mort") {
+      ctx.fillStyle = "#2a0d16"; rond(x, y, s, s, 7); ctx.fill();
+      ctx.strokeStyle = "#ff3355"; ctx.lineWidth = 2; rond(x + 1, y + 1, s - 2, s - 2, 6); ctx.stroke();
+      // tête de mort simplifiée
+      const mx = x + s / 2, my = y + s / 2 - 2;
+      ctx.fillStyle = "#f3e9ec"; ctx.beginPath(); ctx.arc(mx, my, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(mx - 5, my + 5, 10, 6);
+      ctx.fillStyle = "#2a0d16";
+      ctx.beginPath(); ctx.arc(mx - 3.5, my, 2.6, 0, Math.PI * 2); ctx.arc(mx + 3.5, my, 2.6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(mx - 0.8, my + 7, 1.6, 4);
+    } else if (c.t === "mur") {
+      ctx.fillStyle = "#3a4070"; rond(x - 1, y - 1, s + 2, s + 2, 4); ctx.fill();
+      ctx.strokeStyle = "#4c5490"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, y + s / 2); ctx.lineTo(x + s, y + s / 2); ctx.moveTo(x + s / 2, y); ctx.lineTo(x + s / 2, y + s / 2); ctx.stroke();
+    }
+  }
+
+  function dessiner(temps) {
+    ctx.save();
+    if (secousse > 0) ctx.translate((Math.random() - .5) * secousse, (Math.random() - .5) * secousse);
+    ctx.fillStyle = "#0a0c18"; ctx.fillRect(-10, -10, W + 20, H + 20);
+    ctx.strokeStyle = "rgba(255,255,255,.035)"; ctx.lineWidth = 1;
+    for (let i = 1; i < COLS; i++) { ctx.beginPath(); ctx.moveTo(i * CS, 0); ctx.lineTo(i * CS, H); ctx.stroke(); }
+    for (let i = 1; i < ROWS; i++) { ctx.beginPath(); ctx.moveTo(0, i * CS); ctx.lineTo(W, i * CS); ctx.stroke(); }
+
+    if (grille) for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (grille[y][x]) dessinerCellule(grille[y][x], x, y, temps);
+
+    if (balle && etat !== "mort" && etat !== "fin") {
+      trainee.forEach((p, i) => {
+        ctx.globalAlpha = (i / trainee.length) * 0.35;
+        ctx.beginPath(); ctx.arc(p.x, p.y, R * (i / trainee.length), 0, Math.PI * 2); ctx.fillStyle = COULEURS[balle.k]; ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      ctx.shadowColor = COULEURS[balle.k]; ctx.shadowBlur = 18;
+      const g = ctx.createRadialGradient(balle.x - 4, balle.y - 4, 2, balle.x, balle.y, R);
+      g.addColorStop(0, "#fff"); g.addColorStop(0.35, COULEURS[balle.k]); g.addColorStop(1, COULEURS[balle.k]);
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(balle.x, balle.y, R, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+    for (const p of particules) {
+      ctx.globalAlpha = Math.max(0, p.vie); ctx.fillStyle = p.couleur; ctx.fillRect(p.x, p.y, p.t, p.t);
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  // ---------- Boucle ----------
+  let dernier = performance.now();
+  function boucle(t) {
+    const dt = Math.min(0.05, (t - dernier) / 1000); dernier = t;
+    if (etat === "jeu") {
+      const n = Math.ceil(dt / (1 / 240));
+      for (let i = 0; i < n && etat === "jeu"; i++) pas(dt / n);
+      if (etat === "jeu") {
+        partie.temps = Math.max(0, partie.temps - dt);
+        trainee.push({ x: balle.x, y: balle.y }); if (trainee.length > 10) trainee.shift();
+        if (partie.temps <= 0) mourir();
+      }
+      majTemps();
+    }
+    for (const p of particules) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 300 * dt; p.vie -= dt * 1.4; }
+    particules = particules.filter(p => p.vie > 0);
+    secousse = Math.max(0, secousse - dt * 30);
+    dessiner(t / 1000);
+    requestAnimationFrame(boucle);
+  }
+
+  // ---------- Interface ----------
+  function majHud() {
+    if (!partie) return;
+    $("hudScore").textContent = partie.score;
+    $("hudVies").textContent = "●".repeat(Math.max(0, partie.vies)) || "0";
+    if (partie.mode === "illimite") { $("hudNiveauLib").textContent = "Partie n°"; $("hudNiveau").textContent = partie.num; }
+    else if (partie.mode === "jour") { $("hudNiveauLib").textContent = "Mode"; $("hudNiveau").textContent = "Jour"; }
+    else { $("hudNiveauLib").textContent = "Niveau"; $("hudNiveau").textContent = `${partie.niveau + 1}/${NIVEAUX.length}`; }
+    majTemps();
+  }
+  function majTemps() { if (partie) $("hudTemps").textContent = Math.ceil(partie.temps) * 5; }
+
+  function cacherEcrans() { document.querySelectorAll(".ecran").forEach(e => e.classList.remove("visible")); }
+  function ouvrir(id) { cacherEcrans(); $(id).classList.add("visible"); }
+  function afficherMessage(titre, texte, boutons) {
+    $("msgTitre").textContent = titre; $("msgTexte").textContent = texte;
+    const zone = $("msgBoutons"); zone.innerHTML = "";
+    boutons.forEach(([lib, fn, principal]) => {
+      const b = document.createElement("button"); b.textContent = lib; if (principal) b.className = "principal";
+      b.onclick = fn; zone.appendChild(b);
+    });
+    ouvrir("ecranMessage");
+    const p = zone.querySelector(".principal"); if (p) p.focus();
+  }
+  function ouvrirMenu() {
+    etat = "menu";
+    const j = store.get(cleDuJour(), null);
+    $("jourEtat").textContent = j ? (j.gagne ? `réussie · ${j.score}` : `ratée · ${j.score}`) : "nouveau";
+    const rc = store.get("record.campagne", 0);
+    $("campRecord").textContent = rc ? `record ${rc}` : `${NIVEAUX.length} niveaux`;
+    ouvrir("ecranMenu");
+  }
+  function basculerPause() {
+    if (etat === "jeu") {
+      etat = "pause";
+      afficherMessage("Pause", "Respire un coup.", [["Reprendre", () => { cacherEcrans(); etat = "jeu"; }, true], ["Abandonner", ouvrirMenu]]);
+    } else if (etat === "pause") { cacherEcrans(); etat = "jeu"; }
+  }
+  function majUrl(n) {
+    try { const u = new URL(location.href); u.searchParams.set("partie", n); history.replaceState(null, "", u); } catch {}
+  }
+
+  document.querySelectorAll("[data-ouvre]").forEach(b => b.onclick = () => ouvrir(b.dataset.ouvre));
+  document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => {
+    const m = b.dataset.mode;
+    if (m === "illimite") { ouvrir("ecranIllimite"); $("numPartie").focus(); return; }
+    if (m === "jour") {
+      const j = store.get(cleDuJour(), null);
+      if (j) return afficherMessage("Déjà jouée !", `Tu as fait ${j.score} points aujourd'hui. Reviens demain, ou essaie le mode illimité.`,
+        [["Partager", partager, true], ["Rejouer quand même", () => nouvellePartie("jour")], ["Menu", ouvrirMenu]]);
+    }
+    nouvellePartie(m);
+  });
+  $("btnHasard").onclick = () => { $("numPartie").value = 1 + Math.floor(Math.random() * 9999); };
+  $("btnLancerIllimite").onclick = () => {
+    const n = Math.max(1, Math.min(999999, parseInt($("numPartie").value, 10) || 1));
+    majUrl(n); nouvellePartie("illimite", n);
+  };
+  $("btnMenu").onclick = ouvrirMenu;
+  $("btnPause").onclick = basculerPause;
+  $("tPause").onclick = basculerPause;
+
+  const majSon = () => $("optSonVal").textContent = reglages.son ? "activé" : "coupé";
+  const VITESSES = [[0.75, "tranquille"], [1, "normale"], [1.25, "rapide"]];
+  const majVitesse = () => $("optVitesseVal").textContent = (VITESSES.find(v => v[0] === reglages.vitesse) || VITESSES[1])[1];
+  $("optSon").onclick = () => { reglages.son = !reglages.son; store.set("son", reglages.son); majSon(); };
+  $("optVitesse").onclick = () => {
+    const i = VITESSES.findIndex(v => v[0] === reglages.vitesse);
+    reglages.vitesse = VITESSES[(i + 1) % VITESSES.length][0]; store.set("vitesse", reglages.vitesse); majVitesse();
+  };
+  $("optEffacer").onclick = () => { if (confirm("Effacer tous tes records et réglages ?")) { store.clear(); reglages.son = true; reglages.vitesse = 1; majSon(); majVitesse(); } };
+  majSon(); majVitesse();
+
+  // Clavier
+  addEventListener("keydown", e => {
+    const k = e.key.toLowerCase();
+    if (k === "arrowleft" || k === "q" || k === "a") { touches.g = true; e.preventDefault(); }
+    if (k === "arrowright" || k === "d") { touches.d = true; e.preventDefault(); }
+    if (k === " " || k === "p" || k === "escape") {
+      if (etat === "jeu" || etat === "pause") { basculerPause(); e.preventDefault(); }
+    }
+  });
+  addEventListener("keyup", e => {
+    const k = e.key.toLowerCase();
+    if (k === "arrowleft" || k === "q" || k === "a") touches.g = false;
+    if (k === "arrowright" || k === "d") touches.d = false;
+  });
+  addEventListener("blur", () => { touches.g = touches.d = false; if (etat === "jeu") basculerPause(); });
+
+  // Tactile : boutons et moitiés du plateau
+  function maintenir(el, cote) {
+    const on = e => { e.preventDefault(); touches[cote] = true; }, off = () => { touches[cote] = false; };
+    el.addEventListener("pointerdown", on); el.addEventListener("pointerup", off);
+    el.addEventListener("pointerleave", off); el.addEventListener("pointercancel", off);
+  }
+  maintenir($("tGauche"), "g"); maintenir($("tDroite"), "d");
+  const pointeurs = new Map();
+  function majPointeurs() { touches.g = [...pointeurs.values()].includes("g"); touches.d = [...pointeurs.values()].includes("d"); }
+  cv.addEventListener("pointerdown", e => {
+    const r = cv.getBoundingClientRect(); pointeurs.set(e.pointerId, e.clientX - r.left < r.width / 2 ? "g" : "d"); majPointeurs();
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(ev => cv.addEventListener(ev, e => { pointeurs.delete(e.pointerId); majPointeurs(); }));
+
+  // Lien direct : ?partie=15
+  try {
+    const n = parseInt(new URLSearchParams(location.search).get("partie") || new URLSearchParams(location.search).get("game"), 10);
+    if (n > 0) { $("numPartie").value = n; ouvrirMenu(); ouvrir("ecranIllimite"); } else ouvrirMenu();
+  } catch { ouvrirMenu(); }
+
+  requestAnimationFrame(boucle);
+})();
+</script>
+</body>
+</html>
