@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>La Perle Rare</title>
 <meta name="description" content="La Perle Rare — 7 thèmes, 25 secondes chacun. Trouve la réponse que personne n'aura en tête : plus elle est rare, plus elle rapporte.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#05030a">
+<link rel="icon" href="images/icone-192.png">
+<link rel="apple-touch-icon" href="images/icone-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -209,6 +214,88 @@
   .prochaine { text-align: center; font-size: 13px; color: var(--doux); margin: -6px 0 12px; }
   .prochaine b { color: var(--texte); }
 
+
+  /* ---------- Nouveautés ---------- */
+  .outils { display: flex; gap: 6px; }
+  .icone { transition: transform .15s ease, border-color .2s; }
+  .icone:active, .bouton:active { transform: scale(.96); }
+  .bouton { transition: transform .15s ease, border-color .2s, box-shadow .2s; }
+  .bouton:hover { box-shadow: 0 6px 24px rgba(0,0,0,.25); }
+  .bouton.or:hover { box-shadow: 0 6px 28px rgba(233,196,106,.35); }
+  .ecran.actif > * { animation: monte .55s cubic-bezier(.16,1,.3,1) both; }
+  .ecran.actif > *:nth-child(2) { animation-delay: .05s; } .ecran.actif > *:nth-child(3) { animation-delay: .1s; }
+  .ecran.actif > *:nth-child(4) { animation-delay: .15s; } .ecran.actif > *:nth-child(5) { animation-delay: .2s; }
+  .ecran.actif > *:nth-child(n+6) { animation-delay: .25s; }
+  @keyframes monte { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .pile .bouton { animation: monte .5s cubic-bezier(.16,1,.3,1) both; }
+  .pile .bouton:nth-child(2) { animation-delay: .08s; } .pile .bouton:nth-child(3) { animation-delay: .16s; } .pile .bouton:nth-child(4) { animation-delay: .24s; }
+
+  .carte-grade {
+    display: flex; align-items: center; gap: 12px; width: 100%; margin: 0 0 12px; padding: 12px 14px; cursor: pointer; text-align: left;
+    font: inherit; color: var(--texte); border-radius: 16px; border: 1px solid var(--bord); background: var(--carte);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  }
+  .grade-icone { font-size: 30px; line-height: 1; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
+  .grade-icone.grand { font-size: 46px; }
+  .grade-texte { flex: 1; min-width: 0; }
+  .grade-texte b, .profil-grade b { display: block; font-family: Fraunces, Georgia, serif; font-size: 17px; }
+  .grade-texte small, .profil-grade small { display: block; color: var(--doux); font-size: 12px; margin-top: 1px; }
+  .barre { display: block; height: 6px; border-radius: 6px; background: rgba(255,255,255,.12); margin-top: 7px; overflow: hidden; }
+  .barre i { display: block; height: 100%; width: 0; border-radius: 6px; background: linear-gradient(90deg, #7fb4ff, var(--or)); transition: width 1.2s cubic-bezier(.16,1,.3,1); }
+  .serie { font-weight: 700; font-size: 16px; white-space: nowrap; }
+  .sous-titre { margin: 16px 0 8px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--or); }
+  .difficultes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .difficultes button {
+    font: inherit; cursor: pointer; color: var(--texte); background: var(--carte); border: 1px solid var(--bord); border-radius: 14px;
+    padding: 10px 6px; text-align: center; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); transition: .2s;
+  }
+  .difficultes button b { display: block; font-size: 15px; }
+  .difficultes button small { display: block; color: var(--doux); font-size: 11.5px; margin-top: 2px; }
+  .difficultes button.choisi { border-color: var(--or); box-shadow: inset 0 0 0 1px var(--or), 0 0 20px rgba(233,196,106,.2); }
+  .recherche { width: 100%; margin-top: 14px; font: inherit; font-size: 16px; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--bord); background: rgba(10,5,16,.6); color: var(--texte); }
+  .defi { background: linear-gradient(135deg, rgba(233,196,106,.25), rgba(197,140,255,.2)); border: 1px solid var(--or); border-radius: 14px; padding: 12px 14px; margin: 10px 0; font-weight: 600; }
+  .defi-resultat { margin-top: 10px; font-weight: 700; font-size: 17px; }
+  .xp-gagne { margin-top: 8px; color: var(--or2); font-weight: 700; }
+  .commentaire { margin-top: 8px; color: var(--doux); font-style: italic; min-height: 22px; }
+  .bouton.indice { margin-top: 10px; text-align: center; font-size: 15px; padding: 10px; }
+  .chrono.urgence { animation: pulse .5s ease-in-out infinite alternate; }
+  @keyframes pulse { from { box-shadow: 0 0 0 rgba(255,107,107,0); } to { box-shadow: 0 0 18px rgba(255,107,107,.6); } }
+  .collier i.nouvelle { animation: tombe .7s cubic-bezier(.2,1.6,.4,1) both; }
+  @keyframes tombe { from { transform: translateY(-40px) scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
+  .verdict .points.compte { animation: rebond .5s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes rebond { 0% { transform: scale(.6); } 100% { transform: scale(1); } }
+  #particules { position: fixed; inset: 0; z-index: 60; pointer-events: none; width: 100%; height: 100%; }
+  .profil-grade { display: flex; align-items: center; gap: 14px; background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; padding: 14px 16px; margin-top: 12px; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+  .profil-grade > div { flex: 1; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .stats div { background: var(--carte); border: 1px solid var(--bord); border-radius: 14px; padding: 10px 6px; text-align: center; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+  .stats b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .stats small { display: block; color: var(--doux); font-size: 11px; margin-top: 2px; line-height: 1.2; }
+  .repartition { display: grid; gap: 6px; }
+  .repartition div { display: grid; grid-template-columns: 90px 1fr 40px; gap: 8px; align-items: center; font-size: 13px; }
+  .repartition span.b { height: 10px; border-radius: 6px; background: rgba(255,255,255,.08); overflow: hidden; }
+  .repartition span.b i { display: block; height: 100%; border-radius: 6px; transition: width 1s cubic-bezier(.16,1,.3,1); }
+  .repartition em { font-style: normal; text-align: right; color: var(--doux); font-variant-numeric: tabular-nums; }
+  .badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .badges div { background: var(--carte); border: 1px solid var(--bord); border-radius: 14px; padding: 10px 6px; text-align: center; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+  .badges div span { display: block; font-size: 28px; }
+  .badges div b { display: block; font-size: 12px; margin-top: 4px; }
+  .badges div small { display: block; font-size: 10.5px; color: var(--doux); margin-top: 2px; line-height: 1.25; }
+  .badges div.verrou span { filter: grayscale(1) brightness(.5); }
+  .badges div.verrou b { color: var(--doux); }
+  .badge-toast {
+    position: fixed; left: 50%; top: 18px; z-index: 70; transform: translate(-50%, -220%); opacity: 0; transition: transform .6s cubic-bezier(.16,1,.3,1), opacity .4s;
+    display: flex; align-items: center; gap: 12px; padding: 10px 18px 10px 12px; border-radius: 16px; max-width: calc(100% - 32px);
+    background: linear-gradient(135deg, rgba(60,36,80,.95), rgba(30,16,44,.95)); border: 1px solid var(--or); box-shadow: 0 10px 40px rgba(0,0,0,.5);
+  }
+  .badge-toast.visible { transform: translate(-50%, 0); opacity: 1; }
+  .badge-toast span { font-size: 32px; }
+  .badge-toast small { display: block; color: var(--or); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+  .badge-toast b { display: block; }
+  .stats b.petit-texte { font-size: 13px; line-height: 1.2; min-height: 30px; display: flex; align-items: center; justify-content: center; }
+  @media (max-width: 480px) { .logo small { display: none; } .logo b { font-size: 19px; } .outils { gap: 4px; } .icone { width: 36px; height: 36px; font-size: 16px; } }
+  @media (prefers-reduced-motion: reduce) { .ecran.actif > *, .pile .bouton, .collier i.nouvelle { animation: none; } }
+
   /* Carnet de bord */
   .carnet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 14px 0; }
   .carnet div { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 1; background-size: cover; background-position: center; border: 1px solid var(--bord); }
@@ -244,7 +331,11 @@
       <svg class="perle" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="url(#nacre)"/><ellipse cx="14" cy="13" rx="5" ry="3" fill="#fff" opacity=".8"/></svg>
       <span><b>La Perle Rare</b><small>trouve ce que personne ne trouve</small></span>
     </a>
-    <button class="icone" id="btnAide" title="Règles" aria-label="Règles">?</button>
+    <div class="outils">
+      <button class="icone" id="btnSon" title="Son" aria-label="Activer ou couper le son">🔊</button>
+      <button class="icone" id="btnProfil" title="Mon profil" aria-label="Mon profil">👤</button>
+      <button class="icone" id="btnAide" title="Règles" aria-label="Règles">?</button>
+    </div>
   </header>
 
   <!-- ACCUEIL -->
@@ -254,19 +345,26 @@
       <h1>Sois original.</h1>
       <p class="doux">7 thèmes, 25 secondes chacun. Chaque réponse rare t'envoie plus loin dans l'espace. Vise la perle rare !</p>
     </div>
+    <button class="carte-grade" id="carteGrade" aria-label="Voir mon profil">
+      <span class="grade-icone" id="gradeIcone">🧑‍🚀</span>
+      <span class="grade-texte"><b id="gradeNom">Mousse de l'espace</b><small id="gradeDetail">0 XP</small>
+        <span class="barre"><i id="gradeBarre"></i></span></span>
+      <span class="serie" id="serieAccueil" title="Série de jours">🔥 0</span>
+    </button>
     <div class="pile">
       <button class="bouton or" id="btnJour">Partie du jour<small id="jourInfo">Les mêmes thèmes pour tout le monde</small></button>
       <button class="bouton" id="btnIllimite">Mode illimité <small>Des parties à l'infini, chacune avec son numéro</small></button>
-      <button class="bouton" id="btnEntrainement">Entraînement <small>Choisis un thème et découvre toutes les réponses</small></button>
+      <button class="bouton" id="btnEntrainement">Entraînement <small>Choisis un thème parmi <span id="nbThemes">78</span> et entraîne-toi</small></button>
     </div>
     <div class="regles" id="blocRegles">
       <h3>Comment jouer</h3>
       <ol>
         <li>Un thème s'affiche, par exemple <b>« Un fruit »</b>.</li>
-        <li>Tu as <b>25 secondes</b> pour taper une réponse valable.</li>
+        <li>Tu as <b>25 secondes</b> pour taper une réponse valable (40 s en Découverte, 15 s en Expert).</li>
         <li>Plus ta réponse est <b>rare</b>, plus elle rapporte. « Pomme » ne rapporte presque rien, « mangoustan » rapporte le maximum.</li>
         <li>Si ta réponse n'est pas dans nos fiches, tu peux réessayer tant qu'il reste du temps.</li>
         <li>Chaque point t'<b>éloigne de la Terre</b> : la Lune, le Soleil, les étoiles, Andromède… jusqu'où iras-tu ?</li>
+        <li>Gagne de l'expérience, monte en grade et débloque des <b>badges</b>.</li>
       </ol>
       <div class="bareme" id="bareme"></div>
     </div>
@@ -275,12 +373,15 @@
   <!-- ILLIMITÉ -->
   <section class="ecran" id="eIllimite">
     <h2>Mode illimité</h2>
-    <p class="doux">Chaque numéro donne toujours les mêmes 7 thèmes. Envoie un numéro à tes amis pour comparer vos scores.</p>
+    <div class="defi" id="bandeauDefi" hidden></div>
+    <p class="doux">Chaque numéro donne toujours les mêmes 7 thèmes. Envoie le lien à tes amis pour les défier.</p>
     <div class="ligne-input">
       <input type="number" id="numPartie" min="1" max="999999" inputmode="numeric" aria-label="Numéro de partie">
-      <button class="bouton" id="btnHasard">🎲</button>
+      <button class="bouton" id="btnHasard" aria-label="Numéro au hasard">🎲</button>
     </div>
-    <div class="pile" style="margin-top:12px">
+    <h3 class="sous-titre">Difficulté</h3>
+    <div class="difficultes" data-groupe="illimite"></div>
+    <div class="pile" style="margin-top:14px">
       <button class="bouton or" id="btnLancerIllimite">Jouer cette partie</button>
       <button class="bouton" data-accueil>Retour</button>
     </div>
@@ -289,7 +390,10 @@
   <!-- ENTRAÎNEMENT -->
   <section class="ecran" id="eEntrainement">
     <h2>Entraînement</h2>
-    <p class="doux">Un seul thème, sans enjeu. À la fin, tu verras toutes les réponses classées de la plus évidente à la plus rare.</p>
+    <p class="doux">Un seul thème, sans enjeu pour ta série. Les points comptent quand même pour ton expérience.</p>
+    <h3 class="sous-titre">Difficulté</h3>
+    <div class="difficultes" data-groupe="entrainement"></div>
+    <input class="recherche" id="rechercheTheme" type="search" placeholder="Chercher un thème…" aria-label="Chercher un thème">
     <div class="grille-themes" id="grilleThemes"></div>
     <div class="pile" style="margin-top:14px"><button class="bouton" data-accueil>Retour</button></div>
   </section>
@@ -310,6 +414,7 @@
       <button class="bouton or" type="submit">OK</button>
     </form>
     <div class="retour" id="retour"></div>
+    <button class="bouton indice" id="btnIndice" hidden>💡 Un indice</button>
   </section>
 
   <!-- VERDICT -->
@@ -322,8 +427,8 @@
       <div class="reponse" id="vReponse"></div>
       <div class="etiquette" id="vEtiquette"></div>
       <div class="points" id="vPoints"></div>
+      <div class="commentaire" id="vCommentaire"></div>
     </div>
-    <div class="indices" id="vIndices"></div>
     <button class="bouton or" id="btnSuivant">Thème suivant</button>
   </section>
 
@@ -335,433 +440,54 @@
       <div class="total" id="fTotal">0</div>
       <div class="doux">sur <span id="fMax">700</span> points</div>
       <div class="titre" id="fTitre"></div>
+      <div class="defi-resultat" id="fDefi" hidden></div>
+      <div class="xp-gagne" id="fXp"></div>
     </div>
     <div class="voyage" data-taille="grand" id="voyageFin"></div>
     <h3 class="centre" id="fCarnetTitre" style="margin:18px 0 0">Ton carnet de bord</h3>
     <div class="carnet" id="fCarnet"></div>
     <div class="lignes" id="fLignes"></div>
-    <details class="toutes" id="fToutes" hidden><summary>Voir toutes les réponses du thème</summary><div id="fToutesContenu"></div></details>
     <div class="pile" id="fBoutons"></div>
+  </section>
+
+  <!-- PROFIL -->
+  <section class="ecran" id="eProfil">
+    <h2>Mon profil</h2>
+    <div class="profil-grade">
+      <span class="grade-icone grand" id="pGradeIcone">🧑‍🚀</span>
+      <div><b id="pGradeNom"></b><small id="pGradeDetail"></small><span class="barre"><i id="pGradeBarre"></i></span></div>
+    </div>
+    <div class="stats" id="pStats"></div>
+    <h3 class="sous-titre">Tes réponses par rareté</h3>
+    <div class="repartition" id="pRepartition"></div>
+    <h3 class="sous-titre">Badges <span class="doux" id="pBadgesCompte"></span></h3>
+    <div class="badges" id="pBadges"></div>
+    <div class="pile" style="margin-top:16px"><button class="bouton" data-accueil>Retour</button></div>
   </section>
 
   <footer>Un jeu de culture générale en français · <a href="#" id="lienAccueil">accueil</a>
     <details class="credits"><summary>Crédits des images</summary><ul id="listeCredits"></ul></details>
   </footer>
 </div>
+<canvas id="particules" aria-hidden="true"></canvas>
 <div class="toast" id="toast"></div>
+<div class="badge-toast" id="badgeToast" aria-live="polite"></div>
 
 <script src="themes.js"></script>
+<script src="themes2.js"></script>
+<script src="themes3.js"></script>
+<script src="themes4.js"></script>
+<script src="themes5.js"></script>
+<script src="themes6.js"></script>
+<script src="themes7.js"></script>
 <script src="voyage.js"></script>
 <script src="fond.js"></script>
+<script src="effets.js"></script>
+<script src="jeu.js"></script>
 <script>
-(() => {
-  "use strict";
-
-  // ---------- Barème ----------
-  const NIVEAUX = [
-    { nom: "Évident",    pts: 10,  emoji: "⚪", coul: "var(--t0)" },
-    { nom: "Classique",  pts: 25,  emoji: "🔵", coul: "var(--t1)" },
-    { nom: "Bien vu",    pts: 50,  emoji: "🟢", coul: "var(--t2)" },
-    { nom: "Rare",       pts: 75,  emoji: "🟣", coul: "var(--t3)" },
-    { nom: "Perle rare", pts: 100, emoji: "💎", coul: "var(--t4)" },
-  ];
-  const NB_THEMES = 7, DUREE = 25;
-  const DEBUT = new Date(2026, 10, 26); // partie du jour n°1
-
-  // ---------- Outils ----------
-  const $ = id => document.getElementById(id);
-  const store = {
-    get(k, d) { try { const v = localStorage.getItem("perle." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
-    set(k, v) { try { localStorage.setItem("perle." + k, JSON.stringify(v)); } catch {} },
-  };
-  function mulberry32(a) {
-    return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
   }
-  function melanger(tab, rnd) {
-    const a = tab.slice();
-    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-    return a;
-  }
-
-  // Normalise une réponse : minuscules, sans accents, sans article, sans pluriel, sans espaces ni tirets.
-  function normaliser(s) {
-    s = s.toLowerCase().replace(/œ/g, "oe").replace(/æ/g, "ae")
-      .normalize("NFD").replace(/[̀-ͯ]/g, "")
-      .replace(/[^a-z0-9]+/g, " ").trim()
-      .replace(/^(le|la|les|l|un|une|des|du|de la|de l|d) /, "");
-    return s.split(" ").map(m => m.length > 3 ? m.replace(/[sx]$/, "") : m).join("");
-  }
-  function levenshtein(a, b) {
-    if (Math.abs(a.length - b.length) > 2) return 99;
-    let prec = Array.from({ length: b.length + 1 }, (_, i) => i);
-    for (let i = 1; i <= a.length; i++) {
-      const cour = [i];
-      for (let j = 1; j <= b.length; j++)
-        cour[j] = Math.min(prec[j] + 1, cour[j - 1] + 1, prec[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
-      prec = cour;
-    }
-    return prec[b.length];
-  }
-
-  // ---------- Index des thèmes ----------
-  const THEMES = window.THEMES.map(t => {
-    const index = new Map(), entrees = [];
-    t.niveaux.forEach((ligne, niveau) => ligne.split("|").forEach(brut => {
-      const variantes = brut.split("/").map(v => v.trim()).filter(Boolean);
-      if (!variantes.length) return;
-      const e = { nom: variantes[0], niveau };
-      entrees.push(e);
-      variantes.forEach(v => { const k = normaliser(v); if (k && !index.has(k)) index.set(k, e); });
-    }));
-    return { ...t, index, entrees };
-  });
-
-  function chercher(theme, saisie) {
-    const k = normaliser(saisie);
-    if (!k) return null;
-    if (theme.index.has(k)) return theme.index.get(k);
-    const tolerance = k.length >= 8 ? 2 : k.length >= 5 ? 1 : 0;
-    if (!tolerance) return null;
-    let meilleur = null, dist = tolerance + 1;
-    for (const [cle, e] of theme.index) {
-      if (Math.abs(cle.length - k.length) > tolerance) continue;
-      const d = levenshtein(k, cle);
-      if (d < dist) { dist = d; meilleur = e; }
-    }
-    return meilleur;
-  }
-
-  // ---------- Sélection des thèmes ----------
-  function numeroDuJour() {
-    const a = new Date(); a.setHours(0, 0, 0, 0);
-    return Math.round((a - DEBUT) / 86400000) + 1;
-  }
-  function themesPour(graine) {
-    return melanger(THEMES.map((_, i) => i), mulberry32(graine)).slice(0, NB_THEMES);
-  }
-
-  // ---------- État ----------
-  let partie = null, chrono = null;
-
-  function nouvellePartie(mode, num, themeUnique) {
-    let ids;
-    if (mode === "jour") ids = themesPour(num * 2654435761 % 4294967296);
-    else if (mode === "illimite") ids = themesPour(num * 40503 + 977);
-    else ids = [themeUnique];
-    partie = { mode, num, ids, i: 0, resultats: [] };
-    lancerTheme();
-  }
-
-  function lancerTheme() {
-    const t = THEMES[partie.ids[partie.i]];
-    $("jeuMode").textContent = libelleMode();
-    $("jeuScore").textContent = total();
-    $("jeuNumero").textContent = partie.ids.length > 1 ? `Thème ${partie.i + 1} / ${partie.ids.length}` : "Entraînement";
-    $("jeuConsigne").textContent = t.consigne;
-    $("retour").textContent = ""; $("retour").className = "retour";
-    $("saisie").value = "";
-    dessinerCollier("collier");
-    voyageVisible(partie.mode);
-    majVoyage(document.querySelector('#eJeu .voyage'), total());
-    if (partie.mode !== "entrainement") Fond.poser(V.indexEtape(total()));
-    afficher("eJeu");
-    setTimeout(() => $("saisie").focus(), 50);
-
-    const fin = performance.now() + DUREE * 1000;
-    $("chrono").classList.remove("urgence");
-    cancelAnimationFrame(chrono);
-    const tick = () => {
-      const reste = Math.max(0, fin - performance.now());
-      $("chronoBarre").style.transform = `scaleX(${reste / (DUREE * 1000)})`;
-      $("chronoTexte").textContent = Math.ceil(reste / 1000);
-      if (reste < 6000) $("chrono").classList.add("urgence");
-      if (reste <= 0) return terminerTheme(null, "");
-      chrono = requestAnimationFrame(tick);
-    };
-    chrono = requestAnimationFrame(tick);
-  }
-
-  $("formSaisie").addEventListener("submit", ev => {
-    ev.preventDefault();
-    if (!partie || !$("eJeu").classList.contains("actif")) return;
-    const saisie = $("saisie").value.trim();
-    if (!saisie) return;
-    const t = THEMES[partie.ids[partie.i]];
-    const e = chercher(t, saisie);
-    if (e) return terminerTheme(e, saisie);
-    $("retour").textContent = `« ${saisie} » n'est pas dans nos fiches. Essaie autre chose !`;
-    $("retour").className = "retour erreur";
-    const f = $("formSaisie"); f.classList.remove("secoue"); void f.offsetWidth; f.classList.add("secoue");
-    $("saisie").select();
-  });
-
-  function terminerTheme(entree, saisie) {
-    cancelAnimationFrame(chrono);
-    const t = THEMES[partie.ids[partie.i]];
-    const r = { theme: t.id, consigne: t.consigne, saisie, nom: entree ? entree.nom : null, niveau: entree ? entree.niveau : -1 };
-    partie.resultats.push(r);
-    sauverEnCours();
-    montrerVerdict(r, t);
-  }
-
-  function montrerVerdict(r, t) {
-    dessinerCollier("collier2");
-    $("vConsigne").textContent = t.consigne;
-    const perle = $("vPerle");
-    if (r.niveau >= 0) {
-      const n = NIVEAUX[r.niveau];
-      perle.style.cssText = `background:radial-gradient(circle at 35% 30%, #fff, ${n.coul} 45%, rgba(0,0,0,.35) 120%);box-shadow:0 8px 30px ${n.coul}`;
-      $("vReponse").textContent = r.nom;
-      $("vEtiquette").textContent = n.nom; $("vEtiquette").style.background = n.coul; $("vEtiquette").hidden = false;
-      $("vPoints").textContent = `+${n.pts}`;
-    } else {
-      perle.style.cssText = "background:transparent;border:3px dashed var(--danger)";
-      $("vReponse").textContent = "Temps écoulé";
-      $("vEtiquette").hidden = true;
-      $("vPoints").textContent = "+0";
-    }
-    // Indices : la réponse la plus banale et trois perles possibles
-    const rnd = mulberry32(partie.i * 31 + (partie.num || 1));
-    const banale = t.entrees.find(e => e.niveau === 0);
-    const perles = melanger(t.entrees.filter(e => e.niveau === 4), rnd).slice(0, 3).map(e => e.nom);
-    const rares = melanger(t.entrees.filter(e => e.niveau === 3), rnd).slice(0, 2).map(e => e.nom);
-    $("vIndices").innerHTML =
-      `La réponse que tout le monde donne : <b>${echap(banale.nom)}</b><br>` +
-      `Quelques réponses rares : <b>${rares.map(echap).join("</b>, <b>")}</b><br>` +
-      `Des perles rares : <b>${perles.map(echap).join("</b>, <b>")}</b>`;
-    const dernier = partie.i + 1 >= partie.ids.length;
-    $("btnSuivant").textContent = dernier ? "Voir mon résultat" : "Thème suivant";
-    afficher("eVerdict");
-    if (partie.mode !== "entrainement") {
-      const apres = total(), avant = apres - (r.niveau >= 0 ? NIVEAUX[r.niveau].pts : 0);
-      animerVoyage($("voyageVerdict"), avant, apres).then(() => $("btnSuivant").focus());
-    } else $("btnSuivant").focus();
-  }
-
-  $("btnSuivant").onclick = () => {
-    partie.i++;
-    if (partie.i < partie.ids.length) lancerTheme(); else finDePartie();
-  };
-
-  function finDePartie() {
-    const sc = total(), max = partie.ids.length * 100;
-    if (partie.mode === "jour") store.set("jour." + partie.num, { resultats: partie.resultats });
-    if (partie.mode === "illimite") {
-      const rec = store.get("record.illimite", 0);
-      if (sc > rec) store.set("record.illimite", sc);
-    }
-    store.set("encours", null);
-    montrerFin(partie.mode, partie.num, partie.resultats, max);
-  }
-
-  function montrerFin(mode, num, resultats, max) {
-    const sc = resultats.reduce((s, r) => s + (r.niveau >= 0 ? NIVEAUX[r.niveau].pts : 0), 0);
-    dessinerCollier("collier3", resultats, resultats.length);
-    $("fMode").textContent = mode === "jour" ? `Partie du jour n°${num}` : mode === "illimite" ? `Partie n°${num}` : "Entraînement";
-    $("fTotal").textContent = sc;
-    $("fMax").textContent = max;
-    $("fTitre").textContent = titrePour(sc / max);
-    $("fLignes").innerHTML = resultats.map(r => {
-      const n = r.niveau >= 0 ? NIVEAUX[r.niveau] : null;
-      return `<div class="ligne"><i style="background:${n ? n.coul : "transparent"};${n ? "" : "border:2px solid var(--danger)"}"></i>
-        <div><small>${echap(r.consigne)}</small>${n ? echap(r.nom) : '<span class="vide">Pas de réponse</span>'}</div>
-        <span>${n ? "+" + n.pts : "0"}</span></div>`;
-    }).join("");
-
-    // Toutes les réponses (entraînement)
-    const toutes = $("fToutes");
-    if (mode === "entrainement") {
-      const t = THEMES.find(x => x.id === resultats[0].theme);
-      $("fToutesContenu").innerHTML = NIVEAUX.map((n, i) =>
-        `<h4><i style="background:${n.coul}"></i>${n.nom} · ${n.pts} pts</h4><p>${t.entrees.filter(e => e.niveau === i).map(e => echap(e.nom)).join(", ")}</p>`).join("");
-      toutes.hidden = false; toutes.open = true;
-    } else toutes.hidden = true;
-
-    // Voyage final et carnet de bord
-    voyageVisible(mode);
-    const avecVoyage = mode !== "entrainement";
-    $("fCarnetTitre").hidden = $("fCarnet").hidden = !avecVoyage;
-    if (avecVoyage) {
-      afficher("eFin");
-      const ici = V.indexEtape(sc);
-      Fond.poser(ici);
-      animerVoyage($("voyageFin"), 0, sc, 2600, false);
-      $("fCarnet").innerHTML = V.ETAPES.map((e, k) =>
-        `<div class="${k > ici ? "non" : k === ici ? "ici" : ""}" style="background-image:url(${imageDe(e)})" title="${echap(e.nom)}"><span>${k > ici ? "?" : echap(e.nom)}</span></div>`).join("");
-    }
-
-    const zone = $("fBoutons"); zone.innerHTML = "";
-    const ajout = (txt, fn, or) => { const b = document.createElement("button"); b.className = "bouton" + (or ? " or" : ""); b.textContent = txt; b.onclick = fn; zone.appendChild(b); };
-    if (mode !== "entrainement") ajout("Partager mon résultat", () => partager(mode, num, resultats, sc, max), true);
-    if (mode === "illimite") ajout(`Partie suivante (n°${num + 1})`, () => { majUrl(num + 1); nouvellePartie("illimite", num + 1); });
-    if (mode === "entrainement") {
-      ajout("Rejouer ce thème", () => nouvellePartie("entrainement", null, partie.ids[0]), true);
-      ajout("Autre thème", () => afficher("eEntrainement"));
-    }
-    if (mode === "jour") ajout("Jouer en illimité", ouvrirIllimite);
-    ajout("Accueil", accueil);
-    afficher("eFin");
-  }
-
-  function titrePour(ratio) {
-    if (ratio >= 0.9) return "Joaillier de génie 💎";
-    if (ratio >= 0.7) return "Chasseur de perles";
-    if (ratio >= 0.5) return "Esprit original";
-    if (ratio >= 0.3) return "Dans la moyenne… comme tout le monde";
-    return "Tu as pensé comme tout le monde !";
-  }
-
-  function partager(mode, num, resultats, sc, max) {
-    const emojis = resultats.map(r => r.niveau >= 0 ? NIVEAUX[r.niveau].emoji : "❌").join("");
-    const titre = mode === "jour" ? `La Perle Rare — jour n°${num}` : `La Perle Rare — partie n°${num}`;
-    const url = location.origin + location.pathname + (mode === "illimite" ? `?partie=${num}` : "");
-    const etape = V.ETAPES[V.indexEtape(sc)];
-    const texte = `${titre}\n${emojis}  ${sc}/${max}\n🚀 ${etape.nom}, à ${V.formatDistance(V.kmPour(sc))} de la Terre\n${url}`;
-    if (navigator.share) navigator.share({ text: texte }).catch(() => {});
-    else if (navigator.clipboard) navigator.clipboard.writeText(texte).then(() => toast("Résultat copié !"), () => prompt("Copie ton résultat :", texte));
-    else prompt("Copie ton résultat :", texte);
-  }
-
-  // ---------- Voyage dans l'espace ----------
-  const V = window.VOYAGE, SCORE_MAX = NB_THEMES * 100;
-  const imageDe = e => `images/${e.img}.jpg`;
-  V.ETAPES.forEach(e => { const i = new Image(); i.src = imageDe(e); }); // préchargement
-
-  const Fond = window.creerFond(V, imageDe);
-
-  function preparerVoyage(el) {
-    if (el._v) return el._v;
-    const taille = el.dataset.taille;
-    const jalons = V.ETAPES.slice(1).map(e => `<i class="jalon" style="left:${e.pts / SCORE_MAX * 100}%" title="${echap(e.nom)}"></i>`).join("");
-    el.innerHTML = `
-      <div class="hublot ${taille === "petit" ? "petit" : taille === "grand" ? "grand" : ""}">
-        <div class="info"><small></small><b></b><span class="dist"></span><p></p></div>
-      </div>
-      <div class="piste"><div class="rail"></div><div class="rempli"></div>${jalons}<div class="fusee">🚀</div></div>
-      <div class="prochaine"></div>`;
-    el._v = { q: s => el.querySelector(s), qa: s => el.querySelectorAll(s) };
-    return el._v;
-  }
-
-  // Met à jour le panneau du voyage (texte, distance, piste) pour un score donné.
-  function majVoyage(el, score) {
-    const v = preparerVoyage(el);
-    const i = V.indexEtape(score), e = V.ETAPES[i], suiv = V.ETAPES[i + 1];
-    v.q(".info b").textContent = e.nom;
-    v.q(".info p").textContent = e.texte;
-    v.q(".info small").textContent = i === 0 ? "Point de départ" : "Tu as atteint";
-    v.q(".info .dist").textContent = i === 0 && score <= 0 ? "Prêt au décollage" : `à ${V.formatDistance(V.kmPour(score))} de la Terre`;
-    const pct = Math.min(100, score / SCORE_MAX * 100);
-    v.q(".rempli").style.width = pct + "%";
-    v.q(".fusee").style.left = pct + "%";
-    v.qa(".jalon").forEach((j, k) => j.classList.toggle("passe", score >= V.ETAPES[k + 1].pts));
-    v.q(".prochaine").innerHTML = suiv
-      ? `Prochaine étape : <b>${echap(suiv.nom)}</b> dans ${Math.ceil(suiv.pts - score)} points`
-      : "Tu as atteint le bout de l'univers visible !";
-  }
-
-  // Fait avancer le panneau de « de » à « a ». Si des étapes sont franchies, l'arrière-plan voyage d'abord.
-  async function animerVoyage(el, de, a, duree = 1400, piloterFond = true) {
-    cancelAnimationFrame(el._anim);
-    majVoyage(el, de);
-    if (piloterFond) {
-      const i0 = V.indexEtape(de), i1 = V.indexEtape(a), liste = [];
-      for (let k = i0 + 1; k <= i1; k++) liste.push(k);
-      if (liste.length) await Fond.voyager(liste);
-    }
-    await new Promise(fin => {
-      const t0 = performance.now();
-      const pas = now => {
-        const t = Math.min(1, (now - t0) / duree), ease = 1 - Math.pow(1 - t, 3);
-        majVoyage(el, de + (a - de) * ease);
-        if (t < 1) el._anim = requestAnimationFrame(pas); else fin();
-      };
-      el._anim = requestAnimationFrame(pas);
-    });
-  }
-
-  function voyageVisible(mode) {
-    document.querySelectorAll(".voyage").forEach(el => el.hidden = mode === "entrainement");
-  }
-
-  // ---------- Affichage ----------
-  function total() { return partie ? partie.resultats.reduce((s, r) => s + (r.niveau >= 0 ? NIVEAUX[r.niveau].pts : 0), 0) : 0; }
-  function libelleMode() {
-    return partie.mode === "jour" ? `Jour n°${partie.num}` : partie.mode === "illimite" ? `Partie n°${partie.num}` : "Entraînement";
-  }
-  function dessinerCollier(id, resultats = partie.resultats, courant = partie.i) {
-    const n = partie ? partie.ids.length : resultats.length;
-    let html = "";
-    for (let i = 0; i < n; i++) {
-      const r = resultats[i];
-      if (r && r.niveau >= 0) html += `<i class="pleine" style="background:${NIVEAUX[r.niveau].coul}" title="${echap(r.nom)}"></i>`;
-      else if (r) html += `<i class="ratee"></i>`;
-      else html += `<i class="${i === courant ? "courante" : ""}"></i>`;
-    }
-    $(id).innerHTML = html;
-  }
-  function afficher(id) {
-    document.querySelectorAll(".ecran").forEach(e => e.classList.toggle("actif", e.id === id));
-    window.scrollTo({ top: 0 });
-  }
-  function echap(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]); }
-  function toast(txt) { const t = $("toast"); t.textContent = txt; t.classList.add("visible"); setTimeout(() => t.classList.remove("visible"), 1800); }
-  function majUrl(n) { try { const u = new URL(location.href); if (n) u.searchParams.set("partie", n); else u.searchParams.delete("partie"); history.replaceState(null, "", u); } catch {} }
-
-  // Une partie du jour quittée en cours compte quand même : on la garde pour ne pas pouvoir rejouer un thème.
-  function sauverEnCours() { if (partie.mode === "jour") store.set("encours", { num: partie.num, resultats: partie.resultats }); }
-
-  function accueil() {
-    cancelAnimationFrame(chrono);
-    Fond.poser(0);
-    majUrl(null);
-    const n = numeroDuJour(), fait = store.get("jour." + n, null);
-    if (fait) {
-      const sc = fait.resultats.reduce((s, r) => s + (r.niveau >= 0 ? NIVEAUX[r.niveau].pts : 0), 0);
-      $("jourInfo").textContent = `Déjà jouée aujourd'hui : ${sc} points · voir mon résultat`;
-    } else $("jourInfo").textContent = `Partie n°${n} · les mêmes thèmes pour tout le monde`;
-    afficher("eAccueil");
-  }
-  function ouvrirIllimite() {
-    if (!$("numPartie").value) $("numPartie").value = 1 + Math.floor(Math.random() * 9999);
-    afficher("eIllimite");
-  }
-
-  $("btnJour").onclick = () => {
-    const n = numeroDuJour(), fait = store.get("jour." + n, null);
-    if (fait) { partie = { mode: "jour", num: n, ids: fait.resultats.map(() => 0), i: fait.resultats.length, resultats: fait.resultats }; return montrerFin("jour", n, fait.resultats, NB_THEMES * 100); }
-    nouvellePartie("jour", n);
-    const ec = store.get("encours", null);
-    if (ec && ec.num === n && ec.resultats.length) {
-      partie.resultats = ec.resultats; partie.i = ec.resultats.length;
-      if (partie.i >= partie.ids.length) return finDePartie();
-      lancerTheme();
-    }
-  };
-  $("btnIllimite").onclick = ouvrirIllimite;
-  $("btnHasard").onclick = () => { $("numPartie").value = 1 + Math.floor(Math.random() * 99999); };
-  $("btnLancerIllimite").onclick = () => {
-    const n = Math.max(1, Math.min(999999, parseInt($("numPartie").value, 10) || 1));
-    majUrl(n); nouvellePartie("illimite", n);
-  };
-  $("btnEntrainement").onclick = () => afficher("eEntrainement");
-  $("grilleThemes").innerHTML = THEMES.map((t, i) => `<button data-t="${i}">${echap(t.consigne)}</button>`).join("");
-  $("grilleThemes").addEventListener("click", e => { const b = e.target.closest("button"); if (b) nouvellePartie("entrainement", null, +b.dataset.t); });
-  document.querySelectorAll("[data-accueil]").forEach(b => b.onclick = accueil);
-  $("logo").onclick = accueil;
-  $("lienAccueil").onclick = e => { e.preventDefault(); accueil(); };
-  $("btnAide").onclick = () => { accueil(); setTimeout(() => $("blocRegles").scrollIntoView({ behavior: "smooth" }), 50); };
-  $("listeCredits").innerHTML = V.CREDITS.map(([nom, auteur, id]) =>
-    `<li>${echap(nom)} : ${echap(auteur)} — <a href="https://images.nasa.gov/details/${encodeURIComponent(id)}" target="_blank" rel="noopener">source</a></li>`).join("");
-  $("bareme").innerHTML = NIVEAUX.map(n => `<div><i style="background:${n.coul}"></i><b>${n.pts}</b>${n.nom}</div>`).join("");
-
-  // Lien direct : ?partie=15 (ou ?game=15)
-  const q = new URLSearchParams(location.search);
-  const num = parseInt(q.get("partie") || q.get("game"), 10);
-  accueil();
-  if (num > 0) { $("numPartie").value = num; majUrl(num); afficher("eIllimite"); }
-})();
 </script>
 </body>
 </html>
