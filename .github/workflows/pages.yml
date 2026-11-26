@@ -26,7 +26,7 @@ jobs:
         with:
           enablement: true
       - name: Préparer le site
-        run: mkdir _site && cp index.html themes.js _site/ && touch _site/.nojekyll
+        run: mkdir _site && cp -r index.html themes.js voyage.js images _site/ && touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

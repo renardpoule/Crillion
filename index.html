@@ -148,6 +148,68 @@
   .toast.visible { opacity: 1; transform: translateX(-50%); }
   footer { text-align: center; color: var(--doux); font-size: 12px; margin-top: 30px; }
   footer a { color: var(--doux); }
+
+  /* Ciel étoilé */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .55;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, #fff, transparent), radial-gradient(1px 1px at 78% 12%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 33% 72%, #fff, transparent), radial-gradient(1px 1px at 62% 48%, #fff, transparent),
+      radial-gradient(1px 1px at 88% 82%, #fff, transparent), radial-gradient(1.5px 1.5px at 8% 90%, #fff, transparent),
+      radial-gradient(1px 1px at 47% 8%, #fff, transparent), radial-gradient(1px 1px at 92% 38%, #fff, transparent);
+    background-size: 340px 340px;
+  }
+
+  /* Hublot du voyage */
+  .hublot {
+    position: relative; overflow: hidden; border-radius: 18px; border: 1px solid var(--bord);
+    aspect-ratio: 16 / 9; background: #05030a; margin-bottom: 10px;
+  }
+  .hublot.petit { aspect-ratio: auto; height: 120px; }
+  .hublot.grand { aspect-ratio: 4 / 3; }
+  .hublot .couche {
+    position: absolute; inset: -6%; background-size: cover; background-position: center;
+    opacity: 0; transition: opacity .9s ease; animation: derive 30s linear infinite alternate;
+  }
+  .hublot .couche.visible { opacity: 1; }
+  @keyframes derive { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.12) translate(-2%, 1%); } }
+  .hublot::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(5,3,10,.05) 30%, rgba(5,3,10,.88));
+  }
+  .hublot .info { position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 1; }
+  .hublot .info small { display: block; color: var(--or); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+  .hublot .info b { display: block; font-family: Fraunces, Georgia, serif; font-size: clamp(20px, 5.5vw, 28px); line-height: 1.1; text-shadow: 0 2px 10px #000; }
+  .hublot.petit .info b { font-size: 19px; }
+  .hublot .info .dist { display: block; font-variant-numeric: tabular-nums; font-weight: 700; color: #fff; margin-top: 2px; text-shadow: 0 2px 8px #000; }
+  .hublot .info p { margin: 6px 0 0; font-size: 14px; color: #e8e0ee; text-shadow: 0 1px 6px #000; }
+  .hublot.petit .info p { display: none; }
+  .hublot .franchie {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 1; opacity: 0;
+    background: var(--or); color: #2b1a05; font-weight: 700; font-size: 13px; padding: 5px 12px; border-radius: 99px;
+    transition: .35s; white-space: nowrap;
+  }
+  .hublot .franchie.visible { opacity: 1; transform: translateX(-50%); }
+
+  .piste { position: relative; height: 26px; margin: 4px 6px 14px; }
+  .piste .rail { position: absolute; left: 0; right: 0; top: 12px; height: 3px; border-radius: 3px; background: var(--bord); }
+  .piste .rempli { position: absolute; left: 0; top: 12px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, #7fb4ff, var(--or)); width: 0; }
+  .piste .jalon { position: absolute; top: 9px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: var(--fond); border: 2px solid var(--bord); }
+  .piste .jalon.passe { background: var(--or); border-color: var(--or); }
+  .piste .fusee { position: absolute; top: -2px; margin-left: -13px; font-size: 22px; line-height: 1; transform: rotate(45deg); filter: drop-shadow(0 0 6px rgba(255,200,120,.8)); }
+  .prochaine { text-align: center; font-size: 13px; color: var(--doux); margin: -6px 0 12px; }
+  .prochaine b { color: var(--texte); }
+
+  /* Carnet de bord */
+  .carnet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 14px 0; }
+  .carnet div { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 1; background-size: cover; background-position: center; border: 1px solid var(--bord); }
+  .carnet div::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.85)); }
+  .carnet div span { position: absolute; left: 6px; right: 6px; bottom: 5px; z-index: 1; font-size: 10.5px; line-height: 1.15; font-weight: 700; }
+  .carnet div.non { filter: grayscale(1) brightness(.35); }
+  .carnet div.ici { outline: 2px solid var(--or); outline-offset: -2px; }
+  .credits { font-size: 12px; color: var(--doux); text-align: left; max-width: 520px; margin: 8px auto 0; }
+  .credits summary { cursor: pointer; text-align: center; }
+  .credits li { margin: 3px 0; }
 </style>
 </head>
 <body>
@@ -176,7 +238,7 @@
     <div class="accroche">
       <svg class="grande-perle" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="url(#nacre)"/><ellipse cx="14" cy="13" rx="5" ry="3" fill="#fff" opacity=".8"/></svg>
       <h1>Sois original.</h1>
-      <p class="doux">7 thèmes, 25 secondes chacun. Les réponses évidentes ne valent presque rien : vise la perle rare.</p>
+      <p class="doux">7 thèmes, 25 secondes chacun. Chaque réponse rare t'envoie plus loin dans l'espace. Vise la perle rare !</p>
     </div>
     <div class="pile">
       <button class="bouton or" id="btnJour">Partie du jour<small id="jourInfo">Les mêmes thèmes pour tout le monde</small></button>
@@ -190,6 +252,7 @@
         <li>Tu as <b>25 secondes</b> pour taper une réponse valable.</li>
         <li>Plus ta réponse est <b>rare</b>, plus elle rapporte. « Pomme » ne rapporte presque rien, « mangoustan » rapporte le maximum.</li>
         <li>Si ta réponse n'est pas dans nos fiches, tu peux réessayer tant qu'il reste du temps.</li>
+        <li>Chaque point t'<b>éloigne de la Terre</b> : la Lune, le Soleil, les étoiles, Andromède… jusqu'où iras-tu ?</li>
       </ol>
       <div class="bareme" id="bareme"></div>
     </div>
@@ -219,6 +282,7 @@
 
   <!-- JEU -->
   <section class="ecran" id="eJeu">
+    <div class="voyage" data-taille="petit"></div>
     <div class="collier" id="collier"></div>
     <div class="bandeau"><span id="jeuMode">Partie du jour</span><span>Score <b id="jeuScore">0</b></span></div>
     <div class="consigne">
@@ -236,6 +300,7 @@
 
   <!-- VERDICT -->
   <section class="ecran" id="eVerdict">
+    <div class="voyage" data-taille="moyen" id="voyageVerdict"></div>
     <div class="collier" id="collier2"></div>
     <div class="verdict">
       <div class="doux" id="vConsigne"></div>
@@ -257,16 +322,22 @@
       <div class="doux">sur <span id="fMax">700</span> points</div>
       <div class="titre" id="fTitre"></div>
     </div>
+    <div class="voyage" data-taille="grand" id="voyageFin"></div>
+    <h3 class="centre" id="fCarnetTitre" style="margin:18px 0 0">Ton carnet de bord</h3>
+    <div class="carnet" id="fCarnet"></div>
     <div class="lignes" id="fLignes"></div>
     <details class="toutes" id="fToutes" hidden><summary>Voir toutes les réponses du thème</summary><div id="fToutesContenu"></div></details>
     <div class="pile" id="fBoutons"></div>
   </section>
 
-  <footer>Un jeu de culture générale en français · <a href="#" id="lienAccueil">accueil</a></footer>
+  <footer>Un jeu de culture générale en français · <a href="#" id="lienAccueil">accueil</a>
+    <details class="credits"><summary>Crédits des images</summary><ul id="listeCredits"></ul></details>
+  </footer>
 </div>
 <div class="toast" id="toast"></div>
 
 <script src="themes.js"></script>
+<script src="voyage.js"></script>
 <script>
 (() => {
   "use strict";
@@ -376,6 +447,8 @@
     $("retour").textContent = ""; $("retour").className = "retour";
     $("saisie").value = "";
     dessinerCollier("collier");
+    voyageVisible(partie.mode);
+    majVoyage(document.querySelector('#eJeu .voyage'), total(), false);
     afficher("eJeu");
     setTimeout(() => $("saisie").focus(), 50);
 
@@ -444,6 +517,10 @@
     const dernier = partie.i + 1 >= partie.ids.length;
     $("btnSuivant").textContent = dernier ? "Voir mon résultat" : "Thème suivant";
     afficher("eVerdict");
+    if (partie.mode !== "entrainement") {
+      const apres = total(), avant = apres - (r.niveau >= 0 ? NIVEAUX[r.niveau].pts : 0);
+      animerVoyage($("voyageVerdict"), avant, apres);
+    }
     $("btnSuivant").focus();
   }
 
@@ -486,6 +563,18 @@
       toutes.hidden = false; toutes.open = true;
     } else toutes.hidden = true;
 
+    // Voyage final et carnet de bord
+    voyageVisible(mode);
+    const avecVoyage = mode !== "entrainement";
+    $("fCarnetTitre").hidden = $("fCarnet").hidden = !avecVoyage;
+    if (avecVoyage) {
+      afficher("eFin");
+      animerVoyage($("voyageFin"), 0, sc, 2600);
+      const ici = V.indexEtape(sc);
+      $("fCarnet").innerHTML = V.ETAPES.map((e, k) =>
+        `<div class="${k > ici ? "non" : k === ici ? "ici" : ""}" style="background-image:url(${imageDe(e)})" title="${echap(e.nom)}"><span>${k > ici ? "?" : echap(e.nom)}</span></div>`).join("");
+    }
+
     const zone = $("fBoutons"); zone.innerHTML = "";
     const ajout = (txt, fn, or) => { const b = document.createElement("button"); b.className = "bouton" + (or ? " or" : ""); b.textContent = txt; b.onclick = fn; zone.appendChild(b); };
     if (mode !== "entrainement") ajout("Partager mon résultat", () => partager(mode, num, resultats, sc, max), true);
@@ -511,10 +600,77 @@
     const emojis = resultats.map(r => r.niveau >= 0 ? NIVEAUX[r.niveau].emoji : "❌").join("");
     const titre = mode === "jour" ? `La Perle Rare — jour n°${num}` : `La Perle Rare — partie n°${num}`;
     const url = location.origin + location.pathname + (mode === "illimite" ? `?partie=${num}` : "");
-    const texte = `${titre}\n${emojis}  ${sc}/${max}\n${url}`;
+    const etape = V.ETAPES[V.indexEtape(sc)];
+    const texte = `${titre}\n${emojis}  ${sc}/${max}\n🚀 ${etape.nom}, à ${V.formatDistance(V.kmPour(sc))} de la Terre\n${url}`;
     if (navigator.share) navigator.share({ text: texte }).catch(() => {});
     else if (navigator.clipboard) navigator.clipboard.writeText(texte).then(() => toast("Résultat copié !"), () => prompt("Copie ton résultat :", texte));
     else prompt("Copie ton résultat :", texte);
+  }
+
+  // ---------- Voyage dans l'espace ----------
+  const V = window.VOYAGE, SCORE_MAX = NB_THEMES * 100;
+  const imageDe = e => `images/${e.img}.jpg`;
+  V.ETAPES.forEach(e => { const i = new Image(); i.src = imageDe(e); }); // préchargement
+
+  function preparerVoyage(el) {
+    if (el._v) return el._v;
+    const taille = el.dataset.taille;
+    const jalons = V.ETAPES.slice(1).map(e => `<i class="jalon" style="left:${e.pts / SCORE_MAX * 100}%" title="${echap(e.nom)}"></i>`).join("");
+    el.innerHTML = `
+      <div class="hublot ${taille === "petit" ? "petit" : taille === "grand" ? "grand" : ""}">
+        <div class="couche"></div><div class="couche"></div><div class="franchie"></div>
+        <div class="info"><small></small><b></b><span class="dist"></span><p></p></div>
+      </div>
+      <div class="piste"><div class="rail"></div><div class="rempli"></div>${jalons}<div class="fusee">🚀</div></div>
+      <div class="prochaine"></div>`;
+    el._v = { etape: -1, couche: 0, q: s => el.querySelector(s), qa: s => el.querySelectorAll(s) };
+    return el._v;
+  }
+
+  function majVoyage(el, score, annoncer) {
+    const v = preparerVoyage(el);
+    const i = V.indexEtape(score), e = V.ETAPES[i], suiv = V.ETAPES[i + 1];
+    if (i !== v.etape) {
+      const couches = v.qa(".couche");
+      v.couche = 1 - v.couche;
+      couches[v.couche].style.backgroundImage = `url(${imageDe(e)})`;
+      couches[v.couche].classList.add("visible");
+      couches[1 - v.couche].classList.remove("visible");
+      v.q(".info b").textContent = e.nom;
+      v.q(".info p").textContent = e.texte;
+      if (annoncer && v.etape >= 0 && i > v.etape) {
+        const f = v.q(".franchie");
+        f.textContent = `Nouvelle étape : ${e.nom}`;
+        f.classList.add("visible");
+        clearTimeout(v.minuteur); v.minuteur = setTimeout(() => f.classList.remove("visible"), 2200);
+      }
+      v.etape = i;
+    }
+    v.q(".info small").textContent = i === 0 ? "Point de départ" : "Tu as atteint";
+    v.q(".info .dist").textContent = i === 0 && score <= 0 ? "Prêt au décollage" : `à ${V.formatDistance(V.kmPour(score))} de la Terre`;
+    const pct = Math.min(100, score / SCORE_MAX * 100);
+    v.q(".rempli").style.width = pct + "%";
+    v.q(".fusee").style.left = pct + "%";
+    v.qa(".jalon").forEach((j, k) => j.classList.toggle("passe", score >= V.ETAPES[k + 1].pts));
+    v.q(".prochaine").innerHTML = suiv
+      ? `Prochaine étape : <b>${echap(suiv.nom)}</b> dans ${Math.ceil(suiv.pts - score)} points`
+      : "Tu as atteint le bout de l'univers visible !";
+  }
+
+  function animerVoyage(el, de, a, duree = 1800) {
+    cancelAnimationFrame(el._anim);
+    const t0 = performance.now();
+    majVoyage(el, de, false);
+    const pas = now => {
+      const t = Math.min(1, (now - t0) / duree), ease = 1 - Math.pow(1 - t, 3);
+      majVoyage(el, de + (a - de) * ease, true);
+      if (t < 1) el._anim = requestAnimationFrame(pas);
+    };
+    el._anim = requestAnimationFrame(pas);
+  }
+
+  function voyageVisible(mode) {
+    document.querySelectorAll(".voyage").forEach(el => el.hidden = mode === "entrainement");
   }
 
   // ---------- Affichage ----------
@@ -583,6 +739,8 @@
   $("logo").onclick = accueil;
   $("lienAccueil").onclick = e => { e.preventDefault(); accueil(); };
   $("btnAide").onclick = () => { accueil(); setTimeout(() => $("blocRegles").scrollIntoView({ behavior: "smooth" }), 50); };
+  $("listeCredits").innerHTML = V.CREDITS.map(([nom, auteur, id]) =>
+    `<li>${echap(nom)} : ${echap(auteur)} — <a href="https://images.nasa.gov/details/${encodeURIComponent(id)}" target="_blank" rel="noopener">source</a></li>`).join("");
   $("bareme").innerHTML = NIVEAUX.map(n => `<div><i style="background:${n.coul}"></i><b>${n.pts}</b>${n.nom}</div>`).join("");
 
   // Lien direct : ?partie=15 (ou ?game=15)
